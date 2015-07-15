@@ -1,0 +1,15 @@
+from incoming_calls_vs_outgoing_calls_for_IMSI import filteredsuspiciousset_i_vs_o
+from incoming_calls_vs_outgoing_calls_for_IMSI import filteredsuspiciousset_i_vs_o_value
+
+from SMS_USSD import D
+
+from filtering_gprs_IMSI import suspiciouslist_gprs
+
+for sim in filteredsuspiciousset_i_vs_o:
+	if sim in suspiciouslist_gprs:
+		print str(sim) + " : " + str(len(D[sim])) + " Highly Suspicious "
+	else:
+		print str(sim) + " : " + str(len(D[sim])) + " Low Suspicious "
+
+
+	

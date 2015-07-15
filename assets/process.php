@@ -40,11 +40,7 @@ $d = $output[3];
 $e = $output[4];
 $f = $output[5];
 
-$efficiency = (1-($f/$a))*100; 
-
-
-
-
+$efficiency = (1-($e/$a))*100; 
 
 ?>
 

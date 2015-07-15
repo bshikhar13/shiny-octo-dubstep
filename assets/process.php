@@ -1,7 +1,38 @@
 <?php
+
 $limit = $_POST['limit'];
-$tmp =  exec("python master.py $limit",$output);
+
+$smsussd = $_POST['smsussd'];
+$io = $_POST['io'];
+$hg = $_POST['hg'];
+$gprs = $_POST['gprs'];
+$imeiimsi = $_POST['imeiimsi'];
+
+if (!isset($smsussd)){
+	$smsussd = 0;
+}
+
+if (!isset($io)){
+	$io = 0;
+}
+
+if (!isset($hg)){
+	$hg = 0;
+}
+
+if (!isset($gprs)){
+	$gprs = 0;
+}
+
+if (!isset($imeiimsi)){
+	$imeiimsi = 0;
+}
+
+//echo $smsussd.$io.$hg.$gprs.$imeiimsi;
+
+$tmp =  exec("python master.py $limit $smsussd $io $hg $gprs $imeiimsi",$output);
 //var_dump($output) ;
+
 $a = $output[0];
 $b = $output[1];
 $c = $output[2];
@@ -10,6 +41,11 @@ $e = $output[4];
 $f = $output[5];
 
 $efficiency = (1-($f/$a))*100; 
+
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -26,14 +62,14 @@ $efficiency = (1-($f/$a))*100;
 <script type='text/javascript' src="http://underscorejs.org/underscore-min.js"></script>
 <script type='text/javascript' src="sequence-diagram-min.js"></script>
 
- <pre id="uml">
+ <pre id="uml" style="display: none;">
 
 Master Data->SMS_USSD Filter:<?php echo $a; ?> 
-SMS_USSD Filter->GPRS_FILTER:<?php echo $b; ?> 
-GPRS_FILTER->Incoming/Outgoing Filter:<?php echo $c; ?> 
-Incoming/Outgoing Filter->IMEI vs IMSI Filter:<?php echo $d; ?> 
-IMEI vs IMSI Filter->Home_Group Filter:<?php echo $e; ?> 
-Home_Group Filter->Filtered:<?php echo $f; ?> 
+SMS_USSD Filter->Incoming/Outgoing Filter:<?php echo $b; ?> 
+Incoming/Outgoing Filter->Home_Group Filter:<?php echo $c; ?> 
+Home_Group Filter->GPRS_FILTER:<?php echo $d; ?> 
+GPRS_FILTER->IMEI vs IMSI Filter:<?php echo $e; ?> 
+IMEI vs IMSI Filter->Filtered:<?php echo $f; ?> 
 Note right of Filtered: Suspicious IMSIs=<?php echo $f;?> 
 Note left of Master Data: Unique IMSIs=<?php echo $a; ?> 
 Note right of Filtered: Efficiency=<?php echo $efficiency ; ?> 

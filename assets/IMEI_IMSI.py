@@ -12,28 +12,35 @@ def IMEI_IMSI (imsilist):
 	finalSuspicious = []
 	finalUnsuspicios = []
 
-	for imsi in imsilist:
-		#query = "SELECT DISTINCT 'IMEI_Number' FROM (SELECT * FROM cdr WHERE (IMSI_Number = " +str(imsi)+ " AND Type = '1') OR (IMSI_Number = " +str(imsi)+" AND Type = '0'))"
-		query = "SELECT IMEI_Number FROM cdr_voice WHERE IMSI_Number = "+str(imsi)+ " AND (Type = 0 OR Type = 1)"
-		#print query
-		cur.execute(query)
-		
-		S = []
-		for row in cur.fetchall():
-			S.append(row[0])
+
+	#query = "SELECT DISTINCT 'IMEI_Number' FROM (SELECT * FROM cdr WHERE (IMSI_Number = " +str(imsi)+ " AND Type = '1') OR (IMSI_Number = " +str(imsi)+" AND Type = '0'))"
+	query = "SELECT t1.IMSI_number, t1.IMEI_number, t2.IMSI_number, t2.IMEI_number FROM cdr_voice as t1 JOIN cdr_voice as t2 ON ((t1.Type = '1' and t2.Type = '1') or (t1.Type = '0' and t2.Type = '0')) and t1.IMSI_number != '' and t1.IMEI_number != '' and t2.IMSI_number != '' and t2.IMEI_number != '' and t1.IMSI_number != t2.IMSI_number and t1.IMEI_number = t2.IMEI_number"
+	#print query
+	cur.execute(query)
+	import collections
+	D = collections.defaultdict(list)
+
+	def hashIMEI_IMSI (a,b):
+		D[a].append(b)
+
+	S = []
+	for row in cur.fetchall():
+		S.append(row[0])
+		S.append(row[2])
 
 
-		row = len(list(set(S)))
-
-		if row == 1 :
-			finalUnsuspicios.append(imsi)
+	for imsi in imsilist :
+		if imsi in S :
+			finalSuspicious.append(imsi)
 		else:
-			finalSuspicious.append(imsi)	
+			finalUnsuspicios.append(imsi)
+
+
 
 
 
 	result = []
-	
+
 	result.append(finalSuspicious)
 	result.append(finalUnsuspicios)
 

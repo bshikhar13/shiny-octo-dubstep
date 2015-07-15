@@ -1,4 +1,5 @@
-def SMS_USSD(limit):
+def SMS_USSD(imsilist):
+	
 	import MySQLdb
 
 	db = MySQLdb.connect(host="localhost", 
@@ -6,49 +7,28 @@ def SMS_USSD(limit):
 	                      passwd="bshikhar13", 
 	                      db="cdr") 
 
-	cur = db.cursor() 
+	
 
 	
-	#same IMSI with different IMEI
-	#query = "SELECT t1.IMSI_number, t1.IMEI_number, t2.IMSI_number, t2.IMEI_number FROM cdr_voice as t1 JOIN cdr_voice as t2 ON t1.Type = '0' and t2.Type = '0' and t1.IMSI_number != '' and t1.IMEI_number != '' and t2.IMSI_number != '' and t2.IMEI_number != '' and t1.IMSI_number = t2.IMSI_number and t1.IMEI_number != t2.IMEI_number LIMIT " + str(limit)
-
-	#same IMEI with different IMSI
-
-	query = "SELECT IMSI_number from cdr_voice WHERE LongType = 'Short Message Service, Mobile' LIMIT " + str(limit)
-	cur.execute(query)
-
-	import collections
-	D = collections.defaultdict(list)
-
-	def hashIMEI_IMSI (a,b):
-		D[a].append(b)
-
-	count = 0
-	for row in cur.fetchall() :
-		imsinumber = row[0] 
-		hashIMEI_IMSI(imsinumber,1)
-		count = count+1
-
-	#print D
 	frequency = []
-	for k,v in D.items():
-		#print k + " :: " + str(len(v))
-		frequency.append(len(v))
+	imsifrequency = []
+	for imsi in imsilist:
+		if imsi :
+			query = "SELECT count(*) from cdr_voice WHERE LongType = 'Short Message Service, Mobile' AND IMSI_Number =  "+str(imsi)
+			#print query
+			cur = db.cursor() 
+
+			cur.execute(query)
+
+			
+
+			count = 0
+			for row in cur.fetchall() :
+				freq = row[0] 
+				frequency.append(freq)
+				imsifrequency.append(freq)
 
 
-
-
-
-	#import numpy as np
-	#mport pandas as pd
-	#from scipy import stats, integrate
-	#import matplotlib.pyplot as plt
-
-
-
-	#print min(frequency)
-	#print np.mean(frequency)
-	#print np.std(frequency)
 	import numpy as np
 	threshhold = np.mean(frequency) + np.std(frequency)
 
@@ -57,19 +37,15 @@ def SMS_USSD(limit):
 	finalUnsuspicios = []
 	finalSuspicious = []
 
-	for k,v in D.items():
+	for imsi in imsilist :
+		if imsifrequency[counter] >=threshhold :
+			finalUnsuspicios.append(imsi)
+		else :
+			finalSuspicious.append(imsi)
 		counter = counter +1
-		#print k + " :: " + str(len(v))
-		#frequency.append(len(v))
-		if len(v) >= threshhold:
-			finalUnsuspicios.append(k)
-		else:
-			finalSuspicious.append(k)	
-
-
-	#print "Total CDR SMS Records : " + str(count)
+			
 	result = []
-	result.append(counter)
+	
 	result.append(finalSuspicious)
 	result.append(finalUnsuspicios)
 

@@ -12,8 +12,8 @@
 	<form action="assets/process.php" method="POST">
 	<label>Number of records to process : </label>
 	<input type="text" name="limit">
-	<br>
-	<input type="hidden" name="smsussd" value="1">
+	<br><br><br>
+	<input type="checkbox" name="smsussd" value="1"> SMS-USSD Filter
 	<br>
 	<input type="checkbox" name="io" value="1">Incoming/Outgoing Filter
 	<br>

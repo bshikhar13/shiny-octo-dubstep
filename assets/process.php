@@ -41,6 +41,29 @@ $e = $output[4];
 $f = $output[5];
 
 $efficiency = (1-($e/$a))*100; 
+$smsefficiency = (1-($b/$a))*100;
+$ioefficiency = (1-($c/$b))*100;
+$hgefficiency = (1-($d/$c))*100;
+$gprsefficiency = (1-($e/$d))*100;
+$ismiefficiency = (1-($f/$e))*100;
+$report = array (array("Filter name","Used/Not used","Efficiency"), array("SMS-USSD Filter",$smsussd,$smsefficiency), array("Incoming outgoing Filter",$io,$ioefficiency), array("Home Group Filter",$hg,$hgefficiency), array("GPRS Filter",$gprs,$gprsefficiency),array("IMEI vs IMSI Filter",$imeiimsi,$ismiefficiency));
+
+
+$out  = "";
+$out .= "<table border=\"1\">";
+foreach($report as $key => $element){
+    $out .= "<tr>";
+    foreach($element as $subkey => $subelement){
+        $out .= "<td>$subelement</td>";
+    }
+    $out .= "</tr>";
+}
+$out .= "</table>";
+
+
+
+
+
 
 ?>
 
@@ -71,7 +94,12 @@ Note left of Master Data: Unique IMSIs=<?php echo $a; ?>
 Note right of Filtered: Efficiency=<?php echo $efficiency ; ?> 
 
 </pre>
-Total Unique Sims : <?php echo $a; ?>
+<h3>Total Records Processed : <?php echo $limit;?></h3>
+
+<h3>Total Unique Sims : <?php echo $a; ?></h3>
+
+<h4> <?php echo $out;?></h4>
+
 
 <svg width="100" height="100">
 	<div id="diagram">

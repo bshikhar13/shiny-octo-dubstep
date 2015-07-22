@@ -57,9 +57,9 @@ result = unique_IMSI(limit)
 
 print str(result[1])
 
-result = SMS_USSD(result[0])
 
-
+if str(smsussd) is '1' :
+	result = SMS_USSD(result[0])
 
 
 print str(len(result[0]))
